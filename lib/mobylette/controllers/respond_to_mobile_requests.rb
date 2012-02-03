@@ -13,11 +13,58 @@ module Mobylette
         helper_method :is_mobile_view?
 
         # List of mobile agents, from mobile_fu (https://github.com/brendanlim/mobile-fu)
-        MOBILE_USER_AGENTS =  'palm|blackberry|nokia|phone|midp|mobi|symbian|chtml|ericsson|minimo|' +
-                              'audiovox|motorola|samsung|telit|upg1|windows ce|ucweb|astel|plucker|' +
-                              'x320|x240|j2me|sgh|portable|sprint|docomo|kddi|softbank|android|mmp|' +
-                              'pdxgw|netfront|xiino|vodafone|portalmmm|sagem|mot-|sie-|ipod|up\\.b|' +
-                              'webos|amoi|novarra|cdm|alcatel|pocket|iphone|mobileexplorer|mobile'
+        MOBILE_USER_AGENTS =  %w(
+          alcatel
+          amoi
+          android
+          astel
+          audiovox
+          blackberry
+          cdm
+          chtml
+          docomo
+          ericsson
+          ipad
+          iphone
+          ipod
+          j2me
+          kddi
+          midp
+          minimo
+          mmp
+          mobi
+          mobile
+          mobileexplorer
+          mot-
+          motorola
+          netfront
+          nokia
+          novarra
+          palm
+          pdxgw
+          phone
+          plucker
+          pocket
+          portable
+          portalmmm
+          sagem
+          samsung
+          sgh
+          sie-
+          softbank
+          sprint
+          symbian
+          telit
+          ucweb
+          up.b
+          upg1
+          vodafone
+          webos
+          windows\ ce
+          x240
+          x320
+          xiino
+        )
       end
 
       module ClassMethods
@@ -49,6 +96,7 @@ module Mobylette
           # works on 1.9, but not on 1.8
           #valid_options = [:fall_back, :skip_xhr_requests]
           #self.mobylette_options = options.reject {|option| !valid_options.include?(option)}
+          options[:except] = Array(options[:except])
           self.mobylette_options = options
 
           self.send(:include, Mobylette::Controllers::RespondToMobileRequestsMethods)
@@ -61,7 +109,7 @@ module Mobylette
       # This helper returns exclusively if the request's  user_aget is from a mobile
       # device or not.
       def is_mobile_request?
-        request.user_agent.to_s.downcase =~ /#{MOBILE_USER_AGENTS}/
+        request.user_agent.to_s.downcase =~ Regexp.union(MOBILE_USER_AGENTS)
       end
 
       # :doc:
@@ -86,7 +134,15 @@ module Mobylette
 
       # Returns true if this request should be treated as a mobile request
       def respond_as_mobile?
-        processing_xhr_requests? and skip_mobile_param_not_present? and (force_mobile_by_session? or is_mobile_request? or (params[:format] == 'mobile'))
+        processing_xhr_requests? and skip_mobile_param_not_present? and (force_mobile_by_session? or allow_mobile_response? or (params[:format] == 'mobile'))
+      end
+
+      def allow_mobile_response?
+        user_agent_included? && is_mobile_request?
+      end
+
+      def user_agent_included?
+        request.user_agent.to_s.downcase !~ Regexp.union(self.class.mobylette_options[:except])
       end
 
       # Returns true if the visitor has de force_mobile session
