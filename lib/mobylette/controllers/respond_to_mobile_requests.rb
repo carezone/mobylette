@@ -103,11 +103,11 @@ module Mobylette
         end
 
         def add_mobile_user_agent(agent)
-          MOBILE_USER_AGENTS << agent
+          MOBILE_USER_AGENTS << agent.to_s
         end
 
         def remove_mobile_user_agent(agent)
-          MOBILE_USER_AGENTS.delete agent
+          MOBILE_USER_AGENTS.delete agent.to_s
         end
       end
 

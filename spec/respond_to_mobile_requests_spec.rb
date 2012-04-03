@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Mobylette::Controllers::RespondToMobileRequests do
+  ORIGINAL_USER_AGENTS = Mobylette::Controllers::RespondToMobileRequests::MOBILE_USER_AGENTS.dup
   def new_controller(user_agent = 'iPad')
     Class.new(ActionController::Base) do
       include Mobylette::Controllers::RespondToMobileRequests
@@ -64,18 +65,38 @@ describe Mobylette::Controllers::RespondToMobileRequests do
   end
 
   describe "#add_mobile_user_agent" do
+    before do
+      controller::MOBILE_USER_AGENTS.replace(ORIGINAL_USER_AGENTS)
+    end
+
     it "adds a user agent to the list of agents" do
-      controller.const_get(:MOBILE_USER_AGENTS).should_not include('killerapp')
+      controller::MOBILE_USER_AGENTS.should_not include('killerapp')
       controller.add_mobile_user_agent 'killerapp'
-      controller.const_get(:MOBILE_USER_AGENTS).should include('killerapp')
+      controller::MOBILE_USER_AGENTS.should include('killerapp')
+    end
+
+    it "converts symbols to strings" do
+      controller::MOBILE_USER_AGENTS.should_not include('killerapp')
+      controller.add_mobile_user_agent :killerapp
+      controller::MOBILE_USER_AGENTS.should include('killerapp')
     end
   end
 
   describe "#remove_mobile_user_agent" do
+    before do
+      controller::MOBILE_USER_AGENTS.replace(ORIGINAL_USER_AGENTS)
+    end
+
     it "removes a user agent from the list of agents" do
-      controller.add_mobile_user_agent 'killerapp'
-      controller.remove_mobile_user_agent 'killerapp'
-      controller.const_get(:MOBILE_USER_AGENTS).should_not include('killerapp')
+      controller.add_mobile_user_agent 'appkiller'
+      controller.remove_mobile_user_agent 'appkiller'
+      controller::MOBILE_USER_AGENTS.should_not include('appkiller')
+    end
+
+    it "converts symbols to strings" do
+      controller.add_mobile_user_agent 'appkiller'
+      controller.remove_mobile_user_agent :appkiller
+      controller::MOBILE_USER_AGENTS.should_not include('appkiller')
     end
   end
 
