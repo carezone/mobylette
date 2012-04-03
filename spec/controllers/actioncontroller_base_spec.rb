@@ -15,16 +15,10 @@ describe ActionController::Base do
   end
 
   it "should have the :is_mobile_request? method" do
-    # works on ruby 1.9.2, but not on 1.8.7:
-    #@controller.private_methods.include?(:is_mobile_request?).should be_true
-
-    @controller.send(:is_mobile_request?).should be_nil
+    ActionController::Base.new.respond_to?(:is_mobile_request?, true).should be_true
   end
 
-  it "should have the :is_mobile_request? method" do
-    # works on ruby 1.9.2, but not on 1.8.7:
-    #@controller.private_methods.include?(:is_mobile_request?).should be_true
-
-    @controller.send(:is_mobile_view?).should be_nil
+  it "should have the :is_mobile_view? method" do
+    ActionController::Base.new.respond_to?(:is_mobile_view?, true).should be_true
   end
 end
