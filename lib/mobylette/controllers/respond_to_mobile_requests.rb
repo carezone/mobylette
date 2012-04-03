@@ -96,7 +96,7 @@ module Mobylette
           # works on 1.9, but not on 1.8
           #valid_options = [:fall_back, :skip_xhr_requests]
           #self.mobylette_options = options.reject {|option| !valid_options.include?(option)}
-          options[:except] = Array(options[:except])
+          options[:except] = Array(options[:except]).map {|ua| ua.to_s}
           self.mobylette_options = options
 
           self.send(:include, Mobylette::Controllers::RespondToMobileRequestsMethods)

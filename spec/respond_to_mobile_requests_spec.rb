@@ -23,12 +23,12 @@ describe Mobylette::Controllers::RespondToMobileRequests do
 
   it "supports a single exception" do
     controller.respond_to_mobile_requests :except => :ipad
-    controller.mobylette_options[:except].should == [:ipad]
+    controller.mobylette_options[:except].should == ['ipad']
   end
 
   it "supports multiple exceptions" do
     controller.respond_to_mobile_requests :except => [:ipad, :android]
-    controller.mobylette_options[:except].should == [:ipad, :android]
+    controller.mobylette_options[:except].should == ['ipad', 'android']
   end
 
   describe "when iPad is excepted" do
@@ -43,5 +43,21 @@ describe Mobylette::Controllers::RespondToMobileRequests do
       controller.new.send(:respond_as_mobile?).should be_false
     end
 
+  end
+
+  describe "when iPad and Android are excepted" do
+    let(:controller) { new_controller('android') }
+
+    context "request is Android" do
+      it "remains a mobile request" do
+        controller.respond_to_mobile_requests :except => [:ipad, :android]
+        controller.new.send(:is_mobile_request?).should be_true
+      end
+
+      it "does not respond as mobile" do
+        controller.respond_to_mobile_requests :except => [:ipad, :android]
+        controller.new.send(:respond_as_mobile?).should be_false
+      end
+    end
   end
 end
