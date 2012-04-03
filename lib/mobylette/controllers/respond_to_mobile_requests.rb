@@ -101,6 +101,14 @@ module Mobylette
 
           self.send(:include, Mobylette::Controllers::RespondToMobileRequestsMethods)
         end
+
+        def add_mobile_user_agent(agent)
+          MOBILE_USER_AGENTS << agent
+        end
+
+        def remove_mobile_user_agent(agent)
+          MOBILE_USER_AGENTS.delete agent
+        end
       end
 
       private

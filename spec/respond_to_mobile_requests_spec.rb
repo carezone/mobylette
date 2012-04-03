@@ -63,4 +63,20 @@ describe Mobylette::Controllers::RespondToMobileRequests do
     end
   end
 
+  describe "#add_mobile_user_agent" do
+    it "adds a user agent to the list of agents" do
+      controller.const_get(:MOBILE_USER_AGENTS).should_not include('killerapp')
+      controller.add_mobile_user_agent 'killerapp'
+      controller.const_get(:MOBILE_USER_AGENTS).should include('killerapp')
+    end
+  end
+
+  describe "#remove_mobile_user_agent" do
+    it "removes a user agent from the list of agents" do
+      controller.add_mobile_user_agent 'killerapp'
+      controller.remove_mobile_user_agent 'killerapp'
+      controller.const_get(:MOBILE_USER_AGENTS).should_not include('killerapp')
+    end
+  end
+
 end
